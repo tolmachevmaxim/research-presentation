@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>STEP-Analysis // Research Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #FAFAF7;
+  --bg-warm: #F5F3EE;
+  --bg-card: #FFFFFF;
+  --bg-accent: #EEF6F4;
+  --text-primary: #1A1A1A;
+  --text-secondary: #5A5A5A;
+  --text-muted: #8A8A8A;
+  --teal: #0D7C66;
+  --teal-light: #E8F5F1;
+  --teal-dark: #095C4B;
+  --coral: #D94F3B;
+  --coral-light: #FFF0ED;
+  --gold: #C4972A;
+  --gold-light: #FDF8EC;
+  --border: #E5E3DE;
+  --border-light: #EEECE7;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle paper texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* HEADER */
+header {
+  position: fixed; top: 0; width: 100%; z-index: 50;
+  background: rgba(250, 250, 247, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+}
+.header-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.header-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--teal);
+}
+.header-title {
+  font-family: 'Fraunces', serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.header-divider {
+  color: var(--border); margin: 0 4px;
+}
+.header-section {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.header-nav {
+  display: flex; align-items: center; gap: 16px;
+}
+.header-counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text-muted);
+}
+.header-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-secondary);
+  transition: all 0.2s;
+  font-size: 14px;
+}
+.header-btn:hover {
+  border-color: var(--teal); color: var(--teal);
+  box-shadow: var(--shadow-sm);
+}
+
+/* PROGRESS */
+.progress-track {
+  position: fixed; top: 52px; left: 0; width: 100%; height: 2px;
+  background: var(--border-light); z-index: 50;
+}
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-dark));
+  transition: width 0.4s ease;
+}
+
+/* SLIDES */
+main { height: 100vh; width: 100vw; position: relative; padding-top: 54px; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  padding-top: 54px;
+}
+.slide.active { opacity: 1; transform: translateY(0); pointer-events: all; }
+.slide.exit-up { opacity: 0; transform: translateY(-20px); }
+
+.slide-inner {
+  width: 100%; max-width: 1100px;
+  padding: 0 40px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+/* COVER SLIDE */
+.cover { text-align: center; }
+.cover-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--teal);
+  text-transform: uppercase; letter-spacing: 0.15em;
+  margin-bottom: 24px;
+}
+.cover h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+.cover h1 em {
+  font-style: italic; color: var(--teal);
+}
+.cover-desc {
+  font-size: 15px; color: var(--text-secondary);
+  max-width: 560px; margin: 0 auto 32px;
+  line-height: 1.6;
+}
+.cover-stats {
+  display: flex; justify-content: center; gap: 24px;
+  margin-bottom: 40px;
+}
+.cover-stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 24px;
+  box-shadow: var(--shadow-sm);
+}
+.cover-stat-value {
+  font-family: 'Fraunces', serif;
+  font-size: 24px; font-weight: 700;
+  color: var(--teal);
+}
+.cover-stat-label {
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-muted);
+  margin-top: 4px;
+}
+.cover-hint {
+  font-size: 11px; color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* CONTENT SLIDES */
+.slide-header {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 4px;
+}
+.slide-num {
+  font-family: 'Fraunces', serif;
+  font-size: 28px; font-weight: 300;
+  color: var(--teal); opacity: 0.4;
+}
+.slide-num.coral { color: var(--coral); }
+.slide-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.slide-title {
+  font-family: 'Fraunces', serif;
+  font-size: 26px; font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.slide-subtitle {
+  font-size: 13px; color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* BULLET ITEMS */
+.bullets { display: flex; flex-direction: column; gap: 10px; }
+
+.bullet {
+  display: flex; gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  border-left: 3px solid var(--teal);
+  cursor: help;
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  opacity: 0; transform: translateX(-8px);
+  transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.2s, box-shadow 0.2s;
+}
+.bullet.coral-border { border-left-color: var(--coral); }
+.bullet.gold-border { border-left-color: var(--gold); }
+
+.slide.active .bullet { opacity: 1; transform: translateX(0); }
+.slide.active .bullet:nth-child(1) { transition-delay: 0.1s; }
+.slide.active .bullet:nth-child(2) { transition-delay: 0.2s; }
+.slide.active .bullet:nth-child(3) { transition-delay: 0.3s; }
+.slide.active .bullet:nth-child(4) { transition-delay: 0.4s; }
+.slide.active .bullet:nth-child(5) { transition-delay: 0.5s; }
+
+.bullet:hover {
+  border-left-color: var(--teal-dark);
+  box-shadow: var(--shadow-md);
+}
+.bullet.coral-border:hover { border-left-color: var(--coral); }
+.bullet.gold-border:hover { border-left-color: var(--gold); }
+
+.bullet-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--teal); opacity: 0.5;
+  margin-top: 2px; flex-shrink: 0;
+}
+.bullet-num.coral { color: var(--coral); }
+.bullet-text {
+  font-size: 13px; line-height: 1.55;
+  color: var(--text-primary);
+}
+.bullet-text strong { color: var(--teal-dark); font-weight: 600; }
+.bullet-text strong.coral { color: var(--coral); }
+.bullet-text strong.gold { color: var(--gold); }
+.bullet-text .warn { color: var(--coral); font-weight: 600; }
+.bullet-text .muted { color: var(--text-muted); font-weight: 500; }
+
+.bullet-info {
+  position: absolute; top: 8px; right: 10px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--teal-light);
+  color: var(--teal);
+  font-size: 9px; font-weight: 600; font-style: italic;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* STAT CARDS */
+.stats { display: flex; flex-direction: column; gap: 10px; }
+
+.stat-card {
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  cursor: help; position: relative;
+  opacity: 0; transform: scale(0.96);
+  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.2s;
+}
+.slide.active .stat-card { opacity: 1; transform: scale(1); }
+.slide.active .stat-card:nth-child(1) { transition-delay: 0.15s; }
+.slide.active .stat-card:nth-child(2) { transition-delay: 0.25s; }
+.slide.active .stat-card:nth-child(3) { transition-delay: 0.35s; }
+.slide.active .stat-card:nth-child(4) { transition-delay: 0.45s; }
+
+.stat-card:hover { box-shadow: var(--shadow-md); }
+
+.stat-value {
+  font-family: 'Fraunces', serif;
+  font-size: 28px; font-weight: 700;
+  color: var(--teal);
+  letter-spacing: -0.02em;
+}
+.stat-value.coral { color: var(--coral); }
+.stat-value.gold { color: var(--gold); }
+.stat-label {
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* TCO comparison */
+.tco-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.tco-row {
+  margin-bottom: 10px;
+}
+.tco-row-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 4px;
+}
+.tco-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.tco-val {
+  font-family: 'Fraunces', serif;
+  font-size: 18px; font-weight: 700;
+}
+.tco-bar {
+  height: 3px; background: var(--border-light);
+  border-radius: 2px; overflow: hidden;
+}
+.tco-fill {
+  height: 100%; border-radius: 2px;
+  transition: width 1s cubic-bezier(0.16,1,0.3,1) 0.3s;
+  width: 0;
+}
+.slide.active .tco-fill { width: var(--fill); }
+
+/* VERDICT */
+.verdict {
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: var(--teal-light);
+  border-radius: var(--radius);
+  border-left: 3px solid var(--teal);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+}
+.verdict.coral-verdict {
+  background: var(--coral-light);
+  border-left-color: var(--coral);
+}
+.slide.active .verdict { opacity: 1; transform: translateY(0); }
+.verdict-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--teal);
+  margin-bottom: 6px; font-weight: 500;
+}
+.verdict-label.coral { color: var(--coral); }
+.verdict-text {
+  font-size: 13px; line-height: 1.55; color: var(--teal-dark);
+  font-weight: 500;
+}
+.verdict-text.coral { color: var(--coral); }
+
+/* SPECIAL: thesis grid (1.9 macro) */
+.thesis-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 12px; margin-bottom: 16px;
+}
+.thesis-card {
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  border-top: 3px solid var(--teal);
+  cursor: help; position: relative;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.2s;
+}
+.slide.active .thesis-card { opacity: 1; transform: translateY(0); }
+.slide.active .thesis-card:nth-child(1) { transition-delay: 0.1s; }
+.slide.active .thesis-card:nth-child(2) { transition-delay: 0.2s; }
+.slide.active .thesis-card:nth-child(3) { transition-delay: 0.3s; }
+.slide.active .thesis-card:nth-child(4) { transition-delay: 0.35s; border-top-color: var(--gold); }
+.slide.active .thesis-card:nth-child(5) { transition-delay: 0.4s; border-top-color: var(--gold); }
+.thesis-card:hover { box-shadow: var(--shadow-md); }
+.thesis-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: var(--teal); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 8px;
+}
+.thesis-title {
+  font-family: 'Fraunces', serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.thesis-desc {
+  font-size: 11px; color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* SPECIAL: scenario cards (1.10) */
+.scenario-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px; margin-bottom: 16px;
+}
+.scenario-card {
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  cursor: help; position: relative;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.2s;
+}
+.slide.active .scenario-card { opacity: 1; transform: translateY(0); }
+.slide.active .scenario-card:nth-child(1) { transition-delay: 0.15s; border-top: 3px solid var(--teal); }
+.slide.active .scenario-card:nth-child(2) { transition-delay: 0.25s; border-top: 3px solid var(--coral); }
+.slide.active .scenario-card:nth-child(3) { transition-delay: 0.35s; border-top: 3px solid var(--gold); }
+.scenario-card:hover { box-shadow: var(--shadow-md); }
+.scenario-type {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+.scenario-prob {
+  font-family: 'Fraunces', serif;
+  font-size: 36px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.scenario-desc {
+  font-size: 12px; color: var(--text-secondary); line-height: 1.5;
+  margin-bottom: 10px;
+}
+.scenario-details {
+  font-size: 11px; color: var(--text-primary); line-height: 1.6;
+}
+.scenario-ltr {
+  position: absolute; top: 12px; right: 14px;
+  font-family: 'Fraunces', serif;
+  font-size: 28px; font-weight: 700;
+  opacity: 0.06;
+}
+
+/* SPECIAL: risk grid (1.11) */
+.risk-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 12px; margin-bottom: 16px;
+}
+.risk-card {
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  cursor: help; position: relative;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.2s;
+}
+.risk-card.risk-coral { border-left: 3px solid var(--coral); }
+.risk-card.risk-gold { border-left: 3px solid var(--gold); }
+.slide.active .risk-card { opacity: 1; transform: translateY(0); }
+.slide.active .risk-card:nth-child(1) { transition-delay: 0.1s; }
+.slide.active .risk-card:nth-child(2) { transition-delay: 0.2s; }
+.slide.active .risk-card:nth-child(3) { transition-delay: 0.3s; }
+.slide.active .risk-card:nth-child(4) { transition-delay: 0.4s; }
+.risk-card:hover { box-shadow: var(--shadow-md); }
+.risk-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px;
+}
+.risk-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--coral);
+}
+.risk-name.gold { color: var(--gold); }
+.risk-badge {
+  font-family: 'Fraunces', serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--coral);
+}
+.risk-badge.gold { color: var(--gold); }
+.risk-desc {
+  font-size: 12px; color: var(--text-secondary); line-height: 1.5;
+}
+
+/* NAV DOTS */
+.nav-dots {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 50; display: flex; gap: 6px;
+}
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border);
+  cursor: pointer; transition: all 0.3s;
+}
+.dot.active { background: var(--teal); width: 18px; border-radius: 4px; }
+.dot:hover { background: var(--text-muted); }
+
+.nav-hint {
+  position: fixed; bottom: 24px; right: 32px; z-index: 50;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* TOOLTIP */
+#tooltip-box {
+  position: fixed;
+  width: 380px; max-width: 85vw;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-secondary);
+  font-size: 12px; line-height: 1.7;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 9999;
+  transform: translateY(4px);
+}
+#tooltip-box.visible { opacity: 1; transform: translateY(0); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+@media (max-width: 900px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .thesis-grid { grid-template-columns: repeat(2, 1fr); }
+  .scenario-grid { grid-template-columns: 1fr; }
+  .risk-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-brand">
+    <div class="header-dot"></div>
+    <span class="header-title">Research Folio</span>
+    <span class="header-divider">/</span>
+    <span class="header-section" id="header-section">Cover</span>
+  </div>
+  <div class="header-nav">
+    <span class="header-counter" id="slide-counter">01 / 12</span>
+    <button class="header-btn" onclick="prevSlide()">&#8592;</button>
+    <button class="header-btn" onclick="nextSlide()">&#8594;</button>
+  </div>
+</header>
+
+<div class="progress-track"><div class="progress-fill" id="progress-bar" style="width:8.33%"></div></div>
+
+<main id="slides-container">
+
+<!-- SLIDE 0: COVER -->
+<div class="slide active" data-slide="0">
+  <div class="slide-inner cover">
+    <div class="cover-eyebrow">ALMA B2B // Стратегическое Исследование</div>
+    <h1>Расширенный<br/><em>STEP-анализ</em><br/>внешней среды</h1>
+    <p class="cover-desc">Частная медицина РФ 2025-2026. Драйверы и барьеры для B2B AI-продуктов автоматизации коммуникаций, возвращаемости пациентов и разгрузки административного персонала.</p>
+    <div class="cover-stats">
+      <div class="cover-stat"><div class="cover-stat-value">11</div><div class="cover-stat-label">Разделов</div></div>
+      <div class="cover-stat"><div class="cover-stat-value">88K+</div><div class="cover-stat-label">Клиник РФ</div></div>
+      <div class="cover-stat"><div class="cover-stat-value">2.3T</div><div class="cover-stat-label">Руб. рынок</div></div>
+    </div>
+    <div class="cover-hint">&#8592; &#8594; / Space / Scroll</div>
+  </div>
+</div>
+
+<!-- SLIDE 1: 1.1 STEP -->
+<div class="slide" data-slide="1">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.1</span>
+      <span class="slide-label">Section 01</span>
+    </div>
+    <div class="slide-title">STEP-анализ</div>
+    <div class="slide-subtitle">Методологическая рамка исследования рынка коммерческой медицины РФ</div>
+    <div class="content-grid">
+      <div class="bullets">
+        <div class="bullet">
+          <span class="bullet-num">01</span>
+          <span class="bullet-text">Охват: <strong>все типы частных клиник РФ</strong> — многопрофильные, стоматологии, косметологии, ЭКО, диагностика</span>
+        </div>
+        <div class="bullet">
+          <span class="bullet-num">02</span>
+          <span class="bullet-text">Цель: выявить драйверы и барьеры для <strong>B2B AI-продуктов ALMA</strong> (автоматизация коммуникаций, возвращаемость пациентов)</span>
+        </div>
+        <div class="bullet">
+          <span class="bullet-num">03</span>
+          <span class="bullet-text">Система маркировки: <strong>[HIGH]</strong> 3+ источника, <strong>[MEDIUM]</strong> 1-2 агентства, <strong class="warn">[LOW]</strong> инсайт, <strong class="warn">[CONTESTED]</strong> спорный</span>
+        </div>
+        <div class="bullet">
+          <span class="bullet-num">04</span>
+          <span class="bullet-text">Каждый подраздел содержит дискуссию <strong class="gold">Оптимист vs Пессимист</strong> для взвешенного GTM</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value">v4.0</div>
+          <div class="stat-label">Версия документа</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">11</div>
+          <div class="stat-label">Разделов анализа</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value gold">4</div>
+          <div class="stat-label">Уровня достоверности</div>
+        </div>
+        <div class="verdict">
+          <div class="verdict-label">Verdict</div>
+          <div class="verdict-text">STEP-анализ с 11 разделами для обоснования стратегии выхода ALMA на рынок частных клиник РФ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: 1.2 Слабые сигналы -->
+<div class="slide" data-slide="2">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.2</span>
+      <span class="slide-label">Section 02</span>
+    </div>
+    <div class="slide-title">Слабые сигналы</div>
+    <div class="slide-subtitle">Зарождающаяся динамика и «клин» для входа на рынок</div>
+    <div class="content-grid">
+      <div class="bullets">
+        <div class="bullet" data-detail="Пациенты отказываются от дешевой профилактики, но платят премии (до 20+ тыс. руб.) за сложные кейсы. CAC улетел в космос. Выживание зависит от «дожима» и LTV текущей базы.">
+          <span class="bullet-num">01</span>
+          <span class="bullet-text"><strong class="gold">Сжатие трафика при росте чека:</strong> пациенты отказываются от профилактики, но платят 20+ тыс. за сложные кейсы</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Робот способен понимать аудио, успокаивать пациентов и находить окна в расписании. МИСы хотят продавать свои модули AI-ботов и душат конкурентов-стартапов, закручивая гайки на API.">
+          <span class="bullet-num">02</span>
+          <span class="bullet-text"><strong>Роботизация колл-центров:</strong> крупные сети внедряют ИИ-голос, снижая нагрузку на администраторов на 30-40%</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Рынок МИС фрагментирован. Если ALMA не имеет API с популярными МИС из коробки, срок подключения затягивается на месяцы. Локальные AI-боты (Revvy) доказывают, что простая напоминалка приносит больше, чем тяжелая аналитика.">
+          <span class="bullet-num">03</span>
+          <span class="bullet-text"><strong>Фрагментация агрегаторов:</strong> ПроДокторов, НаПоправку и Яндекс Здоровье перекупают SEO-трафик</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="65% обращений с мобильных через текстовые каналы. Telegram в РФ = 93,6 млн. 64% россиян положительно оценивают ИИ в сервисе. Клиника без бесшовного ведения в этих каналах теряет LTV.">
+          <span class="bullet-num">04</span>
+          <span class="bullet-text"><strong class="warn">Экосистемизация:</strong> Сбер, Яндекс, ВТБ строят вертикальные медплатформы — угроза для независимого SaaS</span>
+          <span class="bullet-info">i</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Слабых сигналов в реестре</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value gold">30-40%</div>
+          <div class="stat-label">Снижение нагрузки с ИИ</div>
+        </div>
+        <div class="verdict">
+          <div class="verdict-label">Verdict</div>
+          <div class="verdict-text">Стратегия входа: <strong>retention &gt; acquisition</strong>, пока изменения не стали мейнстримом</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: 1.3 Платежеспособность -->
+<div class="slide" data-slide="3">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.3</span>
+      <span class="slide-label">Section 03</span>
+    </div>
+    <div class="slide-title">Платежеспособность</div>
+    <div class="slide-subtitle">Карта платежеспособности по сегментам для выбора Beachhead</div>
+    <div class="content-grid">
+      <div class="bullets">
+        <div class="bullet" data-detail="Рынок стоматологии ~820-840 млрд руб. (рост +12-18%). Спрос неэластичен в имплантации. Маржинальность 3-7 кресел с 30% до 17-20%, средний чек вырос до 10-11 тыс. (+12-14%).">
+          <span class="bullet-num">01</span>
+          <span class="bullet-text"><strong>Стоматология</strong> — генератор кэша, самый цифровизованный сегмент (&gt;713 млрд руб.)</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Аппаратная косметология +50% за год. 34,6 млн процедур/год. Женщины тратят на себя на 17% больше — перераспределение средств из отпусков/люкса.">
+          <span class="bullet-num">02</span>
+          <span class="bullet-text"><strong class="gold">Косметология</strong> — аппаратная выросла вдвое до 244 млрд руб., инъекционная +34%</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Чек 300-500 тыс. руб./протокол. Откладывание деторождения до 35+ привело к буму. Длинный цикл принятия решения (2-12 мес), но маржа исключительная.">
+          <span class="bullet-num">03</span>
+          <span class="bullet-text"><strong>ЭКО</strong> — высокий чек (200-600 тыс. руб./протокол), рост на господдержке</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Жесткая конкуренция с Инвитро/Гемотест, ОМС. Ментальное здоровье — рост, но без IT-бюджета. Исключен из приоритетов ALMA как Dead Zone.">
+          <span class="bullet-num">04</span>
+          <span class="bullet-text"><span class="warn">Психиатрия</span> — взрывной рост спроса, но low-cost онлайн, рынок без IT-бюджета</span>
+          <span class="bullet-info">i</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value">2.3T</div>
+          <div class="stat-label">Рынок платных медуслуг</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">800+</div>
+          <div class="stat-label">Млрд руб. стоматология</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value coral">+100%</div>
+          <div class="stat-label">Рост аппаратной косметологии</div>
+        </div>
+        <div class="verdict">
+          <div class="verdict-label">Beachhead</div>
+          <div class="verdict-text">Стоматология и косметология — максимальная платежеспособность и готовность к IT-покупкам</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: 1.4 Регулирование -->
+<div class="slide" data-slide="4">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.4</span>
+      <span class="slide-label">Section 04</span>
+    </div>
+    <div class="slide-title">Регулирование</div>
+    <div class="slide-subtitle">Законодательные барьеры, ИБ-требования и архитектурные контуры</div>
+    <div class="content-grid">
+      <div class="bullets">
+        <div class="bullet coral-border" data-detail="С апреля 2025 ФЗ-58 распространил КИИ на все медорганизации (ООО, ИП). С февраля 2026 все МИС включены в типовые перечни КИИ. ФСТЭК и ФСБ проводят проверки.">
+          <span class="bullet-num coral">01</span>
+          <span class="bullet-text">Все медорганизации РФ = <strong class="coral">субъекты КИИ</strong> (ФЗ-187, ФЗ-58)</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet coral-border" data-detail="За утечку 100К-1М записей: штраф 10-15 млн. За повторную: до 3% выручки (25-500 млн). Правило 24/72: уведомить РКН за 24ч, скрытие = штраф до 3 млн. Уголовная ответственность по ст. 272 УК.">
+          <span class="bullet-num coral">02</span>
+          <span class="bullet-text"><strong class="coral">Оборотные штрафы 1-3%</strong> за утечку ПДн (420-ФЗ), до 10 лет УК</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Если ALMA подсказывает диагноз — это медизделие 3 класса риска (годы сертификации). СТОП: ALMA не хранит сканы мед.документов, рентгены. Политика: «Никаких диагнозов».">
+          <span class="bullet-num">03</span>
+          <span class="bullet-text">ALMA как SaaS без диагнозов = <strong>не медизделие</strong> — ключевое архитектурное решение</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet gold-border" data-detail="С 1 января 2025 для КИИ всё ПО в Реестре. Без записи клиника не может использовать ALMA. Бонус: освобождение от НДС (20%). Подать документы — 2-4 мес.">
+          <span class="bullet-num" style="color:var(--gold)">04</span>
+          <span class="bullet-text"><strong class="gold">Реестр отечественного ПО</strong> — без регистрации нельзя использовать в КИИ</span>
+          <span class="bullet-info">i</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value coral">1-3%</div>
+          <div class="stat-label">Штраф за утечку (оборотный)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value coral">10 лет</div>
+          <div class="stat-label">Уголовная ответственность</div>
+        </div>
+        <div class="verdict">
+          <div class="verdict-label">Verdict</div>
+          <div class="verdict-text">Cloud-First на Yandex Cloud (УЗ-2/3) + реестр ПО + отказ от диагностики = единственный легальный путь</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: 1.5 Частные клиники -->
+<div class="slide" data-slide="5">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.5</span>
+      <span class="slide-label">Section 05</span>
+    </div>
+    <div class="slide-title">Частные клиники</div>
+    <div class="slide-subtitle">Устойчивость, консолидация и картография живых сегментов</div>
+    <div class="content-grid">
+      <div class="bullets">
+        <div class="bullet" data-detail="Enterprise Империи (EMC, Медси — решения через ИТ-комитеты). Smart Ниши (3-15, owner-driven). Франчайзи (Инвитро 2000+ точек — диктат HQ). Одинокие волки (1-2 кресла, врач=всё).">
+          <span class="bullet-num">01</span>
+          <span class="bullet-text">4 лагеря: <strong>Enterprise-империи</strong>, Smart Ниши (3-15), Выжиматели (1-3), Зомби-клиники</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet gold-border" data-detail="Owner-driven: основатель-врач сам утверждает траты на ИТ. Elective-услуги до 80%. Цикл сделки = 1 неделя: демо в понедельник → оплата во вторник.">
+          <span class="bullet-num" style="color:var(--gold)">02</span>
+          <span class="bullet-text"><strong class="gold">Smart Ниши (3-15 филиалов)</strong> = Beachhead ALMA: нет IT-отдела, но есть 15-25к/мес на подписку</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="2025: объём M&A >50 млрд руб. EMC купил Семейный доктор (17,6 млрд), Мать и Дитя — МЦ Эксперт (8,5 млрд). ALMA должна стать стандартом ДО поглощения.">
+          <span class="bullet-num">03</span>
+          <span class="bullet-text">Активные M&amp;A: ЕМС + Скандинавия, Мать и Дитя + Эксперт; инвестиции &gt;34 млрд руб.</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Отмена льгот УСН + оборотные штрафы 152-ФЗ заставляют одиночек закрываться. Доля франшиз растет +20%/год. Walking Dead без сильного личного бренда.">
+          <span class="bullet-num">04</span>
+          <span class="bullet-text">Малые клиники (1-3 кресла) под угрозой закрытия — <strong class="muted">не целевой сегмент</strong></span>
+          <span class="bullet-info">i</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value">88K+</div>
+          <div class="stat-label">Частных медюрлиц</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">31.4%</div>
+          <div class="stat-label">CAGR межрегиональных сетей</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value gold">22%</div>
+          <div class="stat-label">Доля Топ-50 к 2030 (с 17.5%)</div>
+        </div>
+        <div class="verdict">
+          <div class="verdict-label">Beachhead</div>
+          <div class="verdict-text">Сети 3-15 филиалов — растут, боятся M&amp;A и нуждаются в автоматизации без CAPEX</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: 1.6 Retention-экономика -->
+<div class="slide" data-slide="6">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.6</span>
+      <span class="slide-label">Section 06</span>
+    </div>
+    <div class="slide-title">Retention-экономика</div>
+    <div class="slide-subtitle">Деконструкция сервисных циклов, No-Show и воронки потерь</div>
+    <div class="content-grid">
+      <div class="bullets">
+        <div class="bullet coral-border" data-detail="40% забыли, 20% не дозвонились, 25% страх. Потери до 900К/мес на кресло. Smart-бот шлёт запрос за 24ч, при отмене — Waitlist. Кресло заполняется за 15 минут.">
+          <span class="bullet-num coral">01</span>
+          <span class="bullet-text"><strong class="coral">No-Show = 15-25%</strong> расписания; 1 час простоя = 12-15 тыс. руб. потерь</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet gold-border" data-detail="35-45% пациентов уходят навсегда. Причины: текучка администраторов, нет автоматизации. Капельная рассылка по базе (6-12 мес без визита) повышает Recall до 75-85%.">
+          <span class="bullet-num" style="color:var(--gold)">02</span>
+          <span class="bullet-text">Recall Rate = <strong class="gold">55-65%</strong> (у топовых = 85-90%); 37% бросают курсовое лечение</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="37% бросают курс после 1-2 визитов. Обрыв RF-лифтинга = -60К, санации = -84К. В базе средней клиники незакрытых планов на 3-8 млн руб.">
+          <span class="bullet-num">03</span>
+          <span class="bullet-text">Косметология: потеря после 1-й процедуры = <strong>80% выручки</strong> цикла</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Стоимость часа простоя = 12-15К (зарплата + аренда + лизинг). При автонапоминаниях неявки снижаются на 40-65%. Каждое спасённое кресло = +12К в кассу.">
+          <span class="bullet-num">04</span>
+          <span class="bullet-text">2 пустых часа/день = <strong>-36 000 руб.</strong> ежедневно; бот закрывает за 3 мин</span>
+          <span class="bullet-info">i</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value coral">15-25%</div>
+          <div class="stat-label">No-Show rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value gold">12-15K</div>
+          <div class="stat-label">Руб./час простоя</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">14.4%</div>
+          <div class="stat-label">Медицинская инфляция</div>
+        </div>
+        <div class="verdict">
+          <div class="verdict-label">Verdict</div>
+          <div class="verdict-text">Продажа SaaS в 2026 возможна только через <strong>калькулятор потерь</strong>, а не через «улучшение сервиса»</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: 1.7 On-Prem vs Cloud -->
+<div class="slide" data-slide="7">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.7</span>
+      <span class="slide-label">Section 07</span>
+    </div>
+    <div class="slide-title">On-Prem vs Cloud</div>
+    <div class="slide-subtitle">Регуляторный шок КИИ vs облачная экономика</div>
+    <div class="content-grid">
+      <div class="bullets">
+        <div class="bullet" data-detail="Сисадмин: 30-80К/мес, электричество: 5-15К/мес, colocation: от 2,6К/мес, обновление ИБ: 50-200К/год. Cloud-First + Hybrid Connector — единственная модель.">
+          <span class="bullet-num">01</span>
+          <span class="bullet-text">TCO On-Prem (5 кресел / 3 года) = <strong class="coral">3.56 млн руб.</strong> vs Cloud = <strong>900 тыс.</strong> (разница 4X)</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="2-CPU сервер: 1,5-1,6М (+35-50%). СХД: 2,3-2,5М (+30%). RAM подорожала до 16 раз. Средняя стоматология не потянет сисадмина на 150К/мес. CAPEX-модель для SMB мертва.">
+          <span class="bullet-num">02</span>
+          <span class="bullet-text">Серверы подорожали на <strong class="gold">30-50%</strong>, ставка ЦБ &gt;21% — CAPEX невозможен</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Прогноз 2026: 512-530 млрд (+23%). К 2027: 90% на гибридных облаках. Доля SaaS: 55-60%. Драйверы: дефицит кадров, импортозамещение, ИИ-бум (GPU as a Service).">
+          <span class="bullet-num">03</span>
+          <span class="bullet-text">Рынок облаков РФ = <strong>416 млрд руб. (+33%)</strong>; Yandex Cloud = стандарт</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="Multi-Tenant SaaS на Yandex Cloud/Selectel с аттестатом ФСТЭК. Hybrid Agent — коннектор на сервере клиники для legacy МИС без открытия внешнего доступа. Продажа за 5-10 дней.">
+          <span class="bullet-num">04</span>
+          <span class="bullet-text">Гибрид: Cloud + Hybrid Agent для legacy МИС = единственный вариант для 80% рынка</span>
+          <span class="bullet-info">i</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="tco-label">TCO Comparison</div>
+          <div class="tco-row">
+            <div class="tco-row-head">
+              <span class="tco-name" style="color:var(--coral)">On-Prem</span>
+              <span class="tco-val" style="color:var(--coral)">3.56M</span>
+            </div>
+            <div class="tco-bar"><div class="tco-fill" style="--fill:100%; background:linear-gradient(90deg,var(--coral),#b03020)"></div></div>
+          </div>
+          <div class="tco-row">
+            <div class="tco-row-head">
+              <span class="tco-name" style="color:var(--teal)">Cloud</span>
+              <span class="tco-val" style="color:var(--teal)">900K</span>
+            </div>
+            <div class="tco-bar"><div class="tco-fill" style="--fill:25%"></div></div>
+          </div>
+        </div>
+        <div class="stat-card" style="text-align:center">
+          <div class="stat-value" style="font-size:40px">4X</div>
+          <div class="stat-label">Разница в пользу облака</div>
+        </div>
+        <div class="verdict">
+          <div class="verdict-label">Verdict</div>
+          <div class="verdict-text">Cloud-First Yandex Cloud (УЗ-2/3) + Hybrid Agent. On-Prem отклонён</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: 1.8 ROI покупки -->
+<div class="slide" data-slide="8">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.8</span>
+      <span class="slide-label">Section 08</span>
+    </div>
+    <div class="slide-title">ROI покупки</div>
+    <div class="slide-subtitle">Unit-экономика клиник и модули с кратчайшим Path to Proof</div>
+    <div class="content-grid">
+      <div class="bullets">
+        <div class="bullet" data-detail="Рост +13,4% номинально, но +3,1% реально (инфляция 14,4%). Расходы населения -8%, обращений -19%. Владелец тратит только на «болеутоляющее» с ROI за 30 дней.">
+          <span class="bullet-num">01</span>
+          <span class="bullet-text">Маржа SMB-стоматологий обвалилась с 30% до <span class="warn">17-20%</span> — покупают только «болеутоляющее» с ROI за 30 дней</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="1 день proof: пациент отменил — через 12 мин ALMA записала из Waitlist. 15К вместо нуля. Smart Waitlist: ИИ за 15 мин автозаполняет слот. TOP-1 Use Case — входной крючок.">
+          <span class="bullet-num">02</span>
+          <span class="bullet-text"><strong>TOP-1: Rescue No-Show</strong> — ROI 240%+ за 1-7 дней (5 слотов × 12к = 60к при подписке 25к)</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="300 звонков/мес пропускается. 86% недозвонившихся не перезванивают. Конверсия с ИИ-ботом до 67% (без: 18-25%). 300 × 25% × 10К = 750К/мес недополученной выручки.">
+          <span class="bullet-num">03</span>
+          <span class="bullet-text"><strong>TOP-2: Lead Capture 24/7</strong> — 15 ночных лидов × 10к = 150к → ROI 600%</span>
+          <span class="bullet-info">i</span>
+        </div>
+        <div class="bullet" data-detail="DentalPRO: нет ИИ-ботов, нет No-Show Rescue. IDENT: закрытая экосистема. YClients: нет медглубины. SmartMed: дорого для SMB. При подписке 15-25К мы побеждаем продуктовым крючком.">
+          <span class="bullet-num">04</span>
+          <span class="bullet-text"><strong class="gold">Голубая поляна:</strong> ни DentalPRO, ни IDENT, ни YClients не предлагают Rescue No-Show</span>
+          <span class="bullet-info">i</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value">240%</div>
+          <div class="stat-label">ROI Rescue No-Show (мес 1)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value gold">600%</div>
+          <div class="stat-label">ROI Lead Capture 24/7</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">15-25K</div>
+          <div class="stat-label">Руб./мес подписка</div>
+        </div>
+        <div class="verdict">
+          <div class="verdict-label">V1 Product</div>
+          <div class="verdict-text">Bundle: Rescue No-Show + Lead Capture 24/7, подписка 15-25к, пилот 14 дней</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: 1.9 Макрогипотеза -->
+<div class="slide" data-slide="9">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.9</span>
+      <span class="slide-label">Synthesis</span>
+    </div>
+    <div class="slide-title">Макрогипотеза</div>
+    <div class="slide-subtitle">5 базовых тезисов ALMA на 2026-2030</div>
+    <div class="thesis-grid">
+      <div class="thesis-card" data-detail="Рынок +13,4% в деньгах, но +3,1% реально. Себестоимость растёт (НДС, импорт, логистика, RAM в 16 раз, серверы +35%). Клиники НЕ ГОТОВЫ покупать новые расходы. Уверенность: 95%.">
+        <div class="thesis-num">Тезис 1</div>
+        <div class="thesis-title">Сжатие маржи</div>
+        <div class="thesis-desc">Рост +13.4% номинально, реально +3.1%. Маржа с 30% до 17-20%</div>
+        <span class="bullet-info">i</span>
+      </div>
+      <div class="thesis-card" data-detail="Доля Топ-50 с 17,5% до 22% к 2030. M&A >50 млрд в 2025. ALMA — стандарт де-факто в средних сетях до поглощения. Уверенность: 90%.">
+        <div class="thesis-num">Тезис 2</div>
+        <div class="thesis-title">Консолидация</div>
+        <div class="thesis-desc">Середняк 3-15 филиалов = зона боли и M&A-цель</div>
+        <span class="bullet-info">i</span>
+      </div>
+      <div class="thesis-card" data-detail="ФЗ-58: ВСЕ медорганизации = КИИ. Штрафы до 500К + до 10 лет УК. Запрет иностранного ПО. Кто первый в Реестре = «безопасный выбор». Уверенность: 95%.">
+        <div class="thesis-num">Тезис 3</div>
+        <div class="thesis-title">Регуляторный ров</div>
+        <div class="thesis-desc">КИИ + 152-ФЗ = конкурентный ров для первого в реестре. Cloud в 4X дешевле</div>
+        <span class="bullet-info">i</span>
+      </div>
+      <div class="thesis-card" data-detail="CPL в Москве 3-7К. 300 звонков/мес пропускается, 86% не перезванивают. No-show 15-25%. LTV имплантации 150-500К. Уверенность: 90%.">
+        <div class="thesis-num">Тезис 4</div>
+        <div class="thesis-title">Retention &gt; Acquisition</div>
+        <div class="thesis-desc">CPL на потолке, 300 звонков/мес пропускается, Recall 55-65%</div>
+        <span class="bullet-info">i</span>
+      </div>
+      <div class="thesis-card" data-detail="85% маммографий ИИ к 2026. Рынок ИИ в здравоохранении: 121 млрд к 2030. Diagnocat: конверсия с 52% до 74% за 2 мес. «3 пациента ночью = 30К». Уверенность: 80%.">
+        <div class="thesis-num">Тезис 5</div>
+        <div class="thesis-title">ИИ = инфраструктура</div>
+        <div class="thesis-desc">Рынок хочет «узкие боты». «3 пациента ночью = 30к» — и всё</div>
+        <span class="bullet-info">i</span>
+      </div>
+    </div>
+    <div class="verdict">
+      <div class="verdict-label">Рабочая макрогипотеза</div>
+      <div class="verdict-text" style="font-family:'Fraunces',serif; font-size:16px; font-weight:600;">ALMA = Машина возврата потерянной выручки. Облако. Узкий бот. Beachhead 3-15 филиалов.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: 1.10 Три сценария -->
+<div class="slide" data-slide="10">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num">1.10</span>
+      <span class="slide-label">Scenarios</span>
+    </div>
+    <div class="slide-title">Три сценария</div>
+    <div class="slide-subtitle">Стратегическая развилка ALMA 2026-2028</div>
+    <div class="scenario-grid">
+      <div class="scenario-card" data-detail="Ставка ЦБ 15%→12%→8-9%. Рынок +13-15%. ИИ adoption 15-20% клиник. Pricing 15-25К. Seed 30-50 млн. ЦБ снизил ставку до 15% (20.03.2026) — мы здесь.">
+        <span class="scenario-ltr" style="color:var(--teal)">А</span>
+        <div class="scenario-type" style="color:var(--teal)">Базовый</div>
+        <div class="scenario-prob" style="color:var(--teal)">55%</div>
+        <div class="scenario-desc">Ставка 15%→12%→9%, медленное выздоровление</div>
+        <div class="scenario-details">Подписка 15-25к/мес<br>20 клиник за 6 мес<br>Seed 30-50 млн руб.</div>
+        <span class="bullet-info">i</span>
+      </div>
+      <div class="scenario-card" data-detail="Ставка 17,5-19,5%. Инфляция 18-22%. Маржа 10-12%. Survival-покупки. «Покажите результат за 3 дня». Pricing max 10-15К или % от спасённой выручки.">
+        <span class="scenario-ltr" style="color:var(--coral)">Б</span>
+        <div class="scenario-type" style="color:var(--coral)">Жёсткий</div>
+        <div class="scenario-prob" style="color:var(--coral)">25%</div>
+        <div class="scenario-desc">Ставка 18-20%, рецессия</div>
+        <div class="scenario-details">Только No-Show MVP<br>Цена 10-15к или %<br>Revenue-first, freeze hiring</div>
+        <span class="bullet-info">i</span>
+      </div>
+      <div class="scenario-card" data-detail="Ставка до 10-12% (2026), 7-8% (2027). ВВП +2-3%. Маржа 22-25%. ИИ adoption 40-50%. Full Bundle 25-50К. Series A 100-300 млн.">
+        <span class="scenario-ltr" style="color:var(--gold)">В</span>
+        <div class="scenario-type" style="color:var(--gold)">Переломный</div>
+        <div class="scenario-prob" style="color:var(--gold)">20%</div>
+        <div class="scenario-desc">Ставка до 10-12%, бум ИИ</div>
+        <div class="scenario-details">Full Bundle 25-50к/мес<br>Найм 3-5 Sales<br>Series A 100-300 млн</div>
+        <span class="bullet-info">i</span>
+      </div>
+    </div>
+    <div class="verdict">
+      <div class="verdict-label">No-Regret Moves</div>
+      <div class="verdict-text">Cloud-First, Rescue No-Show как Wedge, реестр ПО + ФСТЭК, подписка (OPEX), отказ от On-Prem — устойчивы в любом сценарии</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: 1.11 Факторы риска -->
+<div class="slide" data-slide="11">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <span class="slide-num coral">1.11</span>
+      <span class="slide-label">Risk Register</span>
+    </div>
+    <div class="slide-title">Факторы риска</div>
+    <div class="slide-subtitle">Risk Register ALMA — 5 блоков с триггерами и митигацией</div>
+    <div class="risk-grid">
+      <div class="risk-card risk-coral" data-detail="Ставка ≥18%. Инфляция 18-22%. Маржа 10-12%. Индикатор: ставка ≥17% к Q3 2026. Fallback: Сценарий Б, performance-модель. ЦБ снизил до 15% — мониторинг.">
+        <div class="risk-head">
+          <span class="risk-name">R1.1 Рецессия</span>
+          <span class="risk-badge">25%</span>
+        </div>
+        <div class="risk-desc">Обвал SMB → Митигация: Сценарий Б, performance-модель цены</div>
+      </div>
+      <div class="risk-card risk-gold" data-detail="DentalPRO, IDENT или YClients добавляют бот. Индикатор: анонс на конференции. Митигация: MVP быстро, 50+ клиентов, глубина интеграций. Окно = 12 мес.">
+        <div class="risk-head">
+          <span class="risk-name gold">R1.2 Копирование</span>
+          <span class="risk-badge gold">60%</span>
+        </div>
+        <div class="risk-desc">Окно max 12 мес → MVP быстро + 50+ клиентов + глубина интеграций</div>
+      </div>
+      <div class="risk-card risk-coral" data-detail="Штрафы до 15-20 млн, повторная 1-3% выручки. Уголовка до 10 лет. Security by Design, Yandex Cloud УЗ-2/3, пентест, DPO до первой продажи. RED-LINE.">
+        <div class="risk-head">
+          <span class="risk-name">R2.1 Утечка ПДн</span>
+          <span class="risk-badge">RED-LINE</span>
+        </div>
+        <div class="risk-desc">Security by Design, Yandex Cloud УЗ-2/3, DPO до первой продажи</div>
+      </div>
+      <div class="risk-card risk-coral" data-detail="100% факт — ALMA не в реестре. Без записи клиника не может использовать ALMA. Подать немедленно (2-4 мес). Бонус: без НДС. BLOCKER #1.">
+        <div class="risk-head">
+          <span class="risk-name">R2.2 Нет в реестре ПО</span>
+          <span class="risk-badge">BLOCKER</span>
+        </div>
+        <div class="risk-desc">100% факт → подать документы немедленно (2-4 мес процесс)</div>
+      </div>
+    </div>
+    <div class="verdict coral-verdict">
+      <div class="verdict-label coral">Red-Line до запуска</div>
+      <div class="verdict-text coral" style="font-family:'Fraunces',serif; font-size:15px; font-weight:600;">Реестр ПО + DPO + Yandex Cloud аттестат — без этого продажа незаконна</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- NAV DOTS -->
+<div class="nav-dots" id="nav-dots">
+  <div class="dot active" onclick="goToSlide(0)"></div>
+  <div class="dot" onclick="goToSlide(1)"></div>
+  <div class="dot" onclick="goToSlide(2)"></div>
+  <div class="dot" onclick="goToSlide(3)"></div>
+  <div class="dot" onclick="goToSlide(4)"></div>
+  <div class="dot" onclick="goToSlide(5)"></div>
+  <div class="dot" onclick="goToSlide(6)"></div>
+  <div class="dot" onclick="goToSlide(7)"></div>
+  <div class="dot" onclick="goToSlide(8)"></div>
+  <div class="dot" onclick="goToSlide(9)"></div>
+  <div class="dot" onclick="goToSlide(10)"></div>
+  <div class="dot" onclick="goToSlide(11)"></div>
+</div>
+<div class="nav-hint">&#8592; &#8594; / Space</div>
+
+<script>
+let currentSlide = 0;
+const totalSlides = 12;
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+const sectionNames = [
+  'Cover',
+  '1.1 STEP',
+  '1.2 Signals',
+  '1.3 Affordability',
+  '1.4 Regulation',
+  '1.5 Clinics',
+  '1.6 Retention',
+  '1.7 Cloud',
+  '1.8 ROI',
+  '1.9 Macro',
+  '1.10 Scenarios',
+  '1.11 Risks'
+];
+let isTransitioning = false;
+
+function goToSlide(n) {
+  if (isTransitioning || n === currentSlide || n < 0 || n >= totalSlides) return;
+  isTransitioning = true;
+  const prev = slides[currentSlide];
+  const next = slides[n];
+  prev.classList.remove('active');
+  if (n > currentSlide) prev.classList.add('exit-up');
+  next.classList.add('active');
+  dots[currentSlide].classList.remove('active');
+  dots[n].classList.add('active');
+  currentSlide = n;
+  document.getElementById('slide-counter').textContent = `${String(n+1).padStart(2,'0')} / ${totalSlides}`;
+  document.getElementById('progress-bar').style.width = `${((n+1)/totalSlides)*100}%`;
+  document.getElementById('header-section').textContent = sectionNames[n];
+  setTimeout(() => { prev.classList.remove('exit-up'); isTransitioning = false; }, 500);
+}
+function nextSlide() { goToSlide(currentSlide + 1); }
+function prevSlide() { goToSlide(currentSlide - 1); }
+
+document.addEventListener('keydown', e => {
+  if (['ArrowRight','ArrowDown',' '].includes(e.key)) { e.preventDefault(); nextSlide(); }
+  if (['ArrowLeft','ArrowUp'].includes(e.key)) { e.preventDefault(); prevSlide(); }
+  if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+  if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+});
+let touchY = 0;
+document.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; });
+document.addEventListener('touchend', e => {
+  const d = touchY - e.changedTouches[0].clientY;
+  if (Math.abs(d) > 50) d > 0 ? nextSlide() : prevSlide();
+});
+let wt;
+document.addEventListener('wheel', e => {
+  e.preventDefault();
+  clearTimeout(wt);
+  wt = setTimeout(() => { e.deltaY > 0 ? nextSlide() : prevSlide(); }, 50);
+}, { passive: false });
+
+// TOOLTIP
+const tip = document.createElement('div');
+tip.id = 'tooltip-box';
+document.body.appendChild(tip);
+document.querySelectorAll('[data-detail]').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    const r = el.getBoundingClientRect();
+    tip.textContent = el.getAttribute('data-detail');
+    let top = r.bottom + 8, left = r.left;
+    if (top + 180 > window.innerHeight) { top = r.top - 8; tip.style.transform = 'translateY(-100%) translateY(-4px)'; }
+    else { tip.style.transform = 'translateY(0)'; }
+    if (left + 380 > window.innerWidth) left = window.innerWidth - 400;
+    tip.style.top = top + 'px';
+    tip.style.left = left + 'px';
+    tip.classList.add('visible');
+  });
+  el.addEventListener('mouseleave', () => { tip.classList.remove('visible'); });
+});
+</script>
+</body>
+</html>
